@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FaPhoneAlt } from "react-icons/fa";
+import phone from "../assets/phone.png";
 import address from "../assets/address.png";
 import clock from "../assets/clock.png";
 import email from "../assets/email.png";
@@ -30,19 +32,22 @@ export default function Contact() {
     };
 
     try {
-      const backendResponse = await fetch("https://dk-salon-backend.onrender.com/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const backendResponse = await fetch(
+        "https://dk-salon-backend.onrender.com/contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
 
       const emailResponse = await fetch("https://formspree.io/f/mjgdwgqy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify(data),
       });
@@ -218,6 +223,17 @@ export default function Contact() {
             </button>
           </form>
         </div>
+      </div>
+
+      {/*Phone Icon*/}
+      <div className="fixed bottom-5 right-5">
+        <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+        <a
+          href="tel:+919363351196"
+          className="relative bg-green-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center"
+        >
+          <FaPhoneAlt size={25} color="white" />
+        </a>
       </div>
     </section>
   );

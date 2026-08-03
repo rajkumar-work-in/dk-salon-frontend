@@ -94,7 +94,7 @@ export default function Contact() {
                 <p className="text-gray-300">
                   427, Puthupet Main Road, Puthupet
                   <br />
-                  Cuddalore, ST 607 108
+                  Cuddalore 607 108
                 </p>
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function Contact() {
               </div>
               <div>
                 <h3 className="text-xl font-bold mb-2">Email</h3>
-                <p className="text-gray-300">dksalon.co.in@gmail.com</p>
+                <p className="text-gray-300">dksalon.service@gmail.com</p>
               </div>
             </div>
 
@@ -160,7 +160,7 @@ export default function Contact() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="dksalon.co.in@gmail.com"
+                placeholder="dksalon.service@gmail.com"
                 required
                 className="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition"
               />

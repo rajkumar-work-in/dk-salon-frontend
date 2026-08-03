@@ -91,7 +91,7 @@ export default function Navbar({ scrollToSection, refs }) {
           <button
             type="button"
             onClick={() => handleNavClick(refs.contactRef)}
-            className="w-fit px-8 py-4 text-left transition active:scale-95 duration-300 font-semibold text-lg border-b border-gray-700/50 text-white hover:bg-yellow-400/20 hover:text-yellow-400"
+            className="w-fit px-10 py-6 text-left transition active:scale-95 duration-300 font-semibold text-lg border-b border-gray-700/50 text-white hover:bg-yellow-400/20 hover:text-yellow-400"
           >
             Contact
           </button>

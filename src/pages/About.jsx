@@ -13,7 +13,7 @@ export default function About({ scrollToSection, refs }) {
     <div className="bg-black">
       {/* About Hero Section */}
       <div className="relative w-full h-64 md:h-80 bg-gradient-to-r from-gray-900 to-gray-800">
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
 
         <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-20 text-white z-20">
           <div className="flex items-center gap-3 mb-2">

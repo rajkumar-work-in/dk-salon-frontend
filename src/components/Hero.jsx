@@ -16,7 +16,7 @@ export default function Hero({ scrollToSection, refs }) {
       />
 
       {/* Dark Overlay for readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/50 to-black/60 z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/50 to-black/60"></div>
 
       {/* Hero Content */}
       <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-20 text-white z-20">

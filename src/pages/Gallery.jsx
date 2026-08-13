@@ -25,7 +25,7 @@ export default function Gallery({ scrollToSection, refs }) {
   };
 
   return (
-    <section className="py-20 px-6 md:px-20 bg-gray-950 text-white">
+    <section className="py-20 px-6 md:px-20 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="mb-16 text-center">
@@ -35,7 +35,7 @@ export default function Gallery({ scrollToSection, refs }) {
             <div className="w-10 h-[2px] bg-yellow-400"></div>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Our Work</h2>
-          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
             Browse through our portfolio of satisfied clients and beautiful
             haircuts
           </p>
@@ -46,7 +46,7 @@ export default function Gallery({ scrollToSection, refs }) {
           {galleryImages.map((image) => (
             <div
               key={image.id}
-              className="relative group overflow-hidden rounded-lg aspect-square bg-gray-800 hover:shadow-lg hover:shadow-red-600/30 transition duration-300 cursor-pointer"
+              className="relative group overflow-hidden rounded-lg aspect-square bg-gray-200 dark:bg-gray-800 hover:shadow-lg hover:shadow-red-600/30 transition duration-300 cursor-pointer"
             >
               {/* Image Display */}
               <img
@@ -70,15 +70,15 @@ export default function Gallery({ scrollToSection, refs }) {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-16 pt-12 border-t border-gray-700">
-          <p className="text-gray-300 mb-6">
+        <div className="text-center mt-16 pt-12 border-t border-gray-300 dark:border-gray-700">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Follow us on social media for more updates and gallery posts
           </p>
           <div className="flex justify-center gap-4">
-            <button onClick={() => alert("Social media link will be update soon")} className="bg-red-600 hover:bg-red-700 active:scale-95 px-6 py-2 font-semibold active:scale-95 transition duration-300 rounded">
+            <button onClick={() => alert("Social media link will be update soon")} className="bg-red-600 hover:bg-red-700 text-white active:scale-95 px-6 py-2 font-semibold transition duration-300 rounded">
               Facebook
             </button>
-            <button onClick={() => alert("Social media link will be update soon")}className="bg-red-600 hover:bg-red-700 active:scale-95 px-6 py-2 font-semibold active:scale-95 transition duration-300 rounded">
+            <button onClick={() => alert("Social media link will be update soon")} className="bg-red-600 hover:bg-red-700 text-white active:scale-95 px-6 py-2 font-semibold transition duration-300 rounded">
               Instagram
             </button>
           </div>

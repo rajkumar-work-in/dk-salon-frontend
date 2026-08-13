@@ -1,9 +1,20 @@
 import React, { useState } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
 import phone from "../assets/phone.png";
-import address from "../assets/address.png";
-import clock from "../assets/clock.png";
-import email from "../assets/email.png";
+import Toast from "../components/Toast";
+
+// If the backend (Render free tier) is cold, it can take 30-50s to wake up.
+// We give it a generous window, but the UI communicates what's happening
+// instead of just sitting there looking frozen.
+const REQUEST_TIMEOUT_MS = 45000;
+
+function fetchWithTimeout(url, options, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() =>
+    clearTimeout(timer)
+  );
+}
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -13,6 +24,8 @@ export default function Contact() {
     service: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,6 +36,8 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // guard against double-submits
+    setIsSubmitting(true);
 
     const data = {
       name: formData.name,
@@ -32,46 +47,70 @@ export default function Contact() {
     };
 
     try {
-      const backendResponse = await fetch(
-        "https://dk-salon-backend.onrender.com/contact",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+      // Fire both requests in parallel instead of one after another —
+      // this alone roughly halves the wait in the best case.
+      const results = await Promise.allSettled([
+        fetchWithTimeout(
+          "https://dk-salon-backend.onrender.com/contact",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
           },
-          body: JSON.stringify(data),
-        },
-      );
+          REQUEST_TIMEOUT_MS
+        ),
+        fetchWithTimeout(
+          "https://formspree.io/f/mjgdwgqy",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(data),
+          },
+          REQUEST_TIMEOUT_MS
+        ),
+      ]);
 
-      const emailResponse = await fetch("https://formspree.io/f/mjgdwgqy", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const [backendResult, emailResult] = results;
+      const backendOk =
+        backendResult.status === "fulfilled" && backendResult.value.ok;
+      const emailOk =
+        emailResult.status === "fulfilled" && emailResult.value.ok;
 
-      if (backendResponse.ok && emailResponse.ok) {
-        alert("Message sent successfully");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          service: "",
-          message: "",
+      if (backendOk && emailOk) {
+        setToast({ type: "success", message: "Message sent successfully! We'll get back to you soon." });
+        setFormData({ name: "", email: "", phone: "", service: "", message: "" });
+      } else if (backendOk || emailOk) {
+        // One channel got through - still a win, worth telling them plainly.
+        setToast({
+          type: "success",
+          message: "Message received! (One delivery channel was slow, but we got it.)",
         });
+        setFormData({ name: "", email: "", phone: "", service: "", message: "" });
       } else {
-        alert("Error sending message");
+        const timedOut =
+          (backendResult.status === "rejected" && backendResult.reason?.name === "AbortError") ||
+          (emailResult.status === "rejected" && emailResult.reason?.name === "AbortError");
+        setToast({
+          type: "error",
+          message: timedOut
+            ? "The server is taking too long to respond. Please try again in a moment."
+            : "Something went wrong sending your message. Please try again.",
+        });
       }
     } catch (error) {
       console.error(error);
-      alert("Server error");
+      setToast({ type: "error", message: "Unexpected error. Please try again." });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <section className="py-20 px-6 md:px-20 bg-black text-white">
+    <section className="py-20 px-6 md:px-20 bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
+      <Toast toast={toast} onClose={() => setToast(null)} />
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="mb-16 text-center">
@@ -81,7 +120,7 @@ export default function Contact() {
             <div className="w-10 h-[2px] bg-yellow-400"></div>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h2>
-          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
             Have questions or want to book an appointment? Reach out to us
             today!
           </p>
@@ -92,11 +131,8 @@ export default function Contact() {
           <div className="space-y-8">
             <div className="flex gap-4 space-y-[-8px]">
               <div>
-                <img src={address} alt="Address" className="w-8 h-8" />
-              </div>
-              <div>
                 <h3 className="text-xl font-bold mb-2">Address</h3>
-                <p className="text-gray-300">
+                <p className="text-gray-600 dark:text-gray-300">
                   427, Puthupet Main Road, Puthupet
                   <br />
                   Cuddalore 607 108
@@ -105,31 +141,24 @@ export default function Contact() {
             </div>
 
             <div className="flex gap-4">
-              <div className="text-3xl">☏</div>
               <div>
                 <h3 className="text-xl font-bold mb-2">Phone</h3>
-                <p className="text-gray-300">+91 8825520336</p>
-                <p className="text-gray-400 text-sm">Mon-Fri: 9am - 6pm</p>
+                <p className="text-gray-600 dark:text-gray-300">+91 8825520336</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Mon-Fri: 9am - 6pm</p>
               </div>
             </div>
 
             <div className="flex gap-4 space-y-[-3px]">
-              <div>
-                <img src={email} alt="Email" className="w-8 h-8" />
-              </div>
               <div>
                 <h3 className="text-xl font-bold mb-2">Email</h3>
-                <p className="text-gray-300">dksalon.service@gmail.com</p>
+                <p className="text-gray-600 dark:text-gray-300">dksalon.service@gmail.com</p>
               </div>
             </div>
 
             <div className="flex gap-4 space-y-[-3px]">
               <div>
-                <img src={clock} alt="Hours" className="w-8 h-8" />
-              </div>
-              <div>
                 <h3 className="text-xl font-bold mb-2">Hours</h3>
-                <p className="text-gray-300">
+                <p className="text-gray-600 dark:text-gray-300">
                   Monday - Friday: 9am - 6pm
                   <br />
                   Saturday: 10am - 4pm
@@ -143,7 +172,7 @@ export default function Contact() {
           {/* Contact Form */}
           <form
             onSubmit={handleSubmit}
-            className="bg-gray-900/50 border border-gray-800 p-8 rounded-lg"
+            className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 p-8 rounded-lg transition-colors duration-300"
           >
             <div className="mb-6">
               <label className="block text-sm font-semibold mb-2">Name</label>
@@ -154,7 +183,8 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder="Your name"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition"
+                disabled={isSubmitting}
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition disabled:opacity-60"
               />
             </div>
 
@@ -167,7 +197,8 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder="dksalon.service@gmail.com"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition"
+                disabled={isSubmitting}
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition disabled:opacity-60"
               />
             </div>
 
@@ -179,7 +210,8 @@ export default function Contact() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+91 8825520336"
-                className="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition"
+                disabled={isSubmitting}
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition disabled:opacity-60"
               />
             </div>
 
@@ -191,7 +223,8 @@ export default function Contact() {
                 name="service"
                 value={formData.service}
                 onChange={handleChange}
-                className="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white focus:outline-none focus:border-yellow-400 transition"
+                disabled={isSubmitting}
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:border-yellow-400 transition disabled:opacity-60"
               >
                 <option value="">Select a service</option>
                 <option value="Classic Haircut">Classic Haircut</option>
@@ -211,16 +244,30 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder="Your message here..."
                 rows="4"
-                className="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition resize-none"
+                disabled={isSubmitting}
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition resize-none disabled:opacity-60"
               ></textarea>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-red-600 hover:bg-red-700 active:scale-95 duration-300 px-6 py-3 font-bold text-lg transition rounded"
+              disabled={isSubmitting}
+              className="w-full bg-red-600 hover:bg-red-700 active:scale-95 duration-300 px-6 py-3 font-bold text-lg transition rounded text-white flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:active:scale-100"
             >
-              Send Message
+              {isSubmitting ? (
+                <>
+                  <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                  Sending...
+                </>
+              ) : (
+                "Send Message"
+              )}
             </button>
+            {isSubmitting && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-3">
+                This can take up to 30-40 seconds if our server has been idle.
+              </p>
+            )}
           </form>
         </div>
       </div>
@@ -232,7 +279,7 @@ export default function Contact() {
           href="tel:+919363351196"
           className="relative bg-green-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center"
         >
-          <FaPhoneAlt size={25} color="white" />
+          <FaPhoneAlt size={25} color="white" className="cursor-pointer" />
         </a>
       </div>
     </section>

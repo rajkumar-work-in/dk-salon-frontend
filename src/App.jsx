@@ -19,7 +19,7 @@ function App() {
   };
 
   return (
-    <div className="text-white bg-black scroll-smooth">
+    <div className="text-gray-900 bg-white dark:text-white dark:bg-black scroll-smooth transition-colors duration-300">
       <Navbar
         scrollToSection={scrollToSection}
         refs={{ homeRef, aboutRef, serviceRef, galleryRef, contactRef }}

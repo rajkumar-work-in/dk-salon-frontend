@@ -139,7 +139,7 @@ export default function About({ scrollToSection, refs }) {
           </p>
           <button
             onClick={() => handleNavClick(refs.contactRef)}
-            className="bg-red-600 hover:bg-red-700 active:scale-95 duration-300 px-8 py-3 font-bold text-lg transition rounded"
+            className="text-white bg-red-600 hover:bg-red-700 active:scale-95 duration-300 px-8 py-3 font-bold text-lg transition rounded"
           >
             Book Appointment
           </button>

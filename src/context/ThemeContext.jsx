@@ -3,11 +3,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 const ThemeContext = createContext(undefined);
 
 function getInitialTheme() {
-  // 1. Respect a theme the user already picked on a previous visit
+  // Respect a theme the user already picked on a previous visit
   const stored = localStorage.getItem("dk-salon-theme");
   if (stored === "light" || stored === "dark") return stored;
 
-  // 2. Otherwise fall back to the OS/browser preference
+  // Otherwise fall back to the OS/browser preference
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   return prefersDark ? "dark" : "light";
 }

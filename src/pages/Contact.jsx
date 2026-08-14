@@ -83,7 +83,6 @@ export default function Contact() {
         setToast({ type: "success", message: "Message sent successfully! We'll get back to you soon." });
         setFormData({ name: "", email: "", phone: "", service: "", message: "" });
       } else if (backendOk || emailOk) {
-        // One channel got through - still a win, worth telling them plainly.
         setToast({
           type: "success",
           message: "Message received! (One delivery channel was slow, but we got it.)",
@@ -276,7 +275,7 @@ export default function Contact() {
       <div className="fixed bottom-5 right-5">
         <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
         <a
-          href="tel:+919363351196"
+          href="tel:+918825520336"
           className="relative bg-green-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center"
         >
           <FaPhoneAlt size={25} color="white" className="cursor-pointer" />

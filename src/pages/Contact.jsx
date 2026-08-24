@@ -12,7 +12,7 @@ function fetchWithTimeout(url, options, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   return fetch(url, { ...options, signal: controller.signal }).finally(() =>
-    clearTimeout(timer)
+    clearTimeout(timer),
   );
 }
 
@@ -57,7 +57,7 @@ export default function Contact() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
           },
-          REQUEST_TIMEOUT_MS
+          REQUEST_TIMEOUT_MS,
         ),
         fetchWithTimeout(
           "https://formspree.io/f/mjgdwgqy",
@@ -69,7 +69,7 @@ export default function Contact() {
             },
             body: JSON.stringify(data),
           },
-          REQUEST_TIMEOUT_MS
+          REQUEST_TIMEOUT_MS,
         ),
       ]);
 
@@ -80,18 +80,36 @@ export default function Contact() {
         emailResult.status === "fulfilled" && emailResult.value.ok;
 
       if (backendOk && emailOk) {
-        setToast({ type: "success", message: "Message sent successfully! We'll get back to you soon." });
-        setFormData({ name: "", email: "", phone: "", service: "", message: "" });
+        setToast({
+          type: "success",
+          message: "Message sent successfully! We'll get back to you soon.",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          service: "",
+          message: "",
+        });
       } else if (backendOk || emailOk) {
         setToast({
           type: "success",
-          message: "Message received! (One delivery channel was slow, but we got it.)",
+          message:
+            "Message received! (One delivery channel was slow, but we got it.)",
         });
-        setFormData({ name: "", email: "", phone: "", service: "", message: "" });
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          service: "",
+          message: "",
+        });
       } else {
         const timedOut =
-          (backendResult.status === "rejected" && backendResult.reason?.name === "AbortError") ||
-          (emailResult.status === "rejected" && emailResult.reason?.name === "AbortError");
+          (backendResult.status === "rejected" &&
+            backendResult.reason?.name === "AbortError") ||
+          (emailResult.status === "rejected" &&
+            emailResult.reason?.name === "AbortError");
         setToast({
           type: "error",
           message: timedOut
@@ -101,7 +119,10 @@ export default function Contact() {
       }
     } catch (error) {
       console.error(error);
-      setToast({ type: "error", message: "Unexpected error. Please try again." });
+      setToast({
+        type: "error",
+        message: "Unexpected error. Please try again.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -142,15 +163,21 @@ export default function Contact() {
             <div className="flex gap-4">
               <div>
                 <h3 className="text-xl font-bold mb-2">Phone</h3>
-                <p className="text-gray-600 dark:text-gray-300">+91 8825520336</p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">Mon-Fri: 9am - 6pm</p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  +91 8825520336
+                </p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Mon-Fri: 9am - 6pm
+                </p>
               </div>
             </div>
 
             <div className="flex gap-4 space-y-[-3px]">
               <div>
                 <h3 className="text-xl font-bold mb-2">Email</h3>
-                <p className="text-gray-600 dark:text-gray-300">dksalon.service@gmail.com</p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  dksalon.service@gmail.com
+                </p>
               </div>
             </div>
 
@@ -272,13 +299,13 @@ export default function Contact() {
       </div>
 
       {/*Phone Icon*/}
-      <div className="fixed bottom-5 right-5">
-        <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+      <div className="fixed bottom-5 right-5 z-50">
         <a
           href="tel:+918825520336"
-          className="relative bg-green-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center"
+          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg flex items-center justify-center"
+          aria-label="Call us"
         >
-          <FaPhoneAlt size={25} color="white" className="cursor-pointer" />
+          <FaPhoneAlt size={25} />
         </a>
       </div>
     </section>

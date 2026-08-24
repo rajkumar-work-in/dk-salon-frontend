@@ -14,11 +14,23 @@ function App() {
   const contactRef = useRef(null);
 
   const scrollToSection = (ref) => {
-    ref.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  if (!ref.current) return;
+
+  const navbarHeight = 60;
+
+  const elementPosition =
+    ref.current.getBoundingClientRect().top + window.scrollY;
+
+  const offsetPosition = elementPosition - navbarHeight;
+
+  window.scrollTo({
+    top: offsetPosition,
+    behavior: "smooth",
+  });
+};
 
   return (
-    <div className="text-gray-900 bg-white dark:text-white dark:bg-black scroll-smooth transition-colors duration-300">
+    <div className="text-gray-900 bg-white dark:text-white dark:bg-black transition-colors duration-300">
       <Navbar
         scrollToSection={scrollToSection}
         refs={{ homeRef, aboutRef, serviceRef, galleryRef, contactRef }}

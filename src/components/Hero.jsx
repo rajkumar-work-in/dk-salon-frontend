@@ -8,7 +8,7 @@ export default function Hero({ scrollToSection, refs }) {
 
   return (
     <div className="relative w-full min-h-screen">
-      {/* Background */}
+      {/* Background Image */}
       <img
         src={hero}
         alt="DK Salon barbershop interior"

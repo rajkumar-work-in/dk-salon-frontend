@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import hero from "../assets/hero.png";
 
 export default function Hero({ scrollToSection, refs }) {

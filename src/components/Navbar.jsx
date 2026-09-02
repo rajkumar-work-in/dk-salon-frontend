@@ -1,6 +1,24 @@
 import React, { useState } from "react";
 import { FaSun, FaMoon } from "react-icons/fa";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/UseTheme"; 
+
+// ✅ Moved OUTSIDE Navbar — now it's a stable, top-level component.
+// theme & toggleTheme come in as props instead of being read from
+// the closure, so React won't recreate this on every Navbar render.
+function ThemeToggleButton({ theme, toggleTheme, className = "" }) {
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      className={`relative flex items-center justify-center w-10 h-10 rounded-full border transition duration-300 active:scale-90
+        border-gray-300 text-gray-700 hover:bg-gray-100
+        dark:border-gray-700 dark:text-yellow-400 dark:hover:bg-gray-800 ${className}`}
+    >
+      {theme === "dark" ? <FaSun size={18} /> : <FaMoon size={16} />}
+    </button>
+  );
+}
 
 export default function Navbar({ scrollToSection, refs }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,19 +35,6 @@ export default function Navbar({ scrollToSection, refs }) {
     scrollToSection(ref);
     setMenuOpen(false);
   };
-
-  const ThemeToggleButton = ({ className = "" }) => (
-    <button
-      type="button"
-      onClick={toggleTheme}
-      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      className={`relative flex items-center justify-center w-10 h-10 rounded-full border transition duration-300 active:scale-90
-        border-gray-300 text-gray-700 hover:bg-gray-100
-        dark:border-gray-700 dark:text-yellow-400 dark:hover:bg-gray-800 ${className}`}
-    >
-      {theme === "dark" ? <FaSun size={18} /> : <FaMoon size={16} />}
-    </button>
-  );
 
   return (
     <nav className="sticky top-0 bg-white dark:bg-black z-50 flex justify-between items-center px-6 py-2 text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700/30 transition-colors duration-300">
@@ -62,13 +67,13 @@ export default function Navbar({ scrollToSection, refs }) {
           Contact
         </li>
         <li>
-          <ThemeToggleButton />
+          <ThemeToggleButton theme={theme} toggleTheme={toggleTheme} />
         </li>
       </ul>
 
       {/* Mobile: theme toggle + hamburger */}
       <div className="flex items-center gap-2 md:hidden">
-        <ThemeToggleButton />
+        <ThemeToggleButton theme={theme} toggleTheme={toggleTheme} />
         <button
           type="button"
           className="px-4 py-4 text-gray-900 dark:text-white transform hover:scale-105 active:scale-95 transition duration-300 font-bold text-lg"

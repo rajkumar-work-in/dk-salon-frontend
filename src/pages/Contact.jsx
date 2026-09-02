@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
-import phone from "../assets/phone.png";
 import Toast from "../components/Toast";
 
 // If the backend (Render free tier) is cold, it can take 30-50s to wake up.
@@ -235,7 +234,7 @@ export default function Contact() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+91 8825520336"
+                placeholder="+91 93633511966"
                 disabled={isSubmitting}
                 className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition disabled:opacity-60"
               />

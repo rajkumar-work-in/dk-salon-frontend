@@ -1,13 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-
-const ThemeContext = createContext(undefined);
+import React, { useEffect, useState } from "react";
+import { ThemeContext } from "./ThemeContext";
 
 function getInitialTheme() {
-  // Respect a theme the user already picked on a previous visit
   const stored = localStorage.getItem("dk-salon-theme");
   if (stored === "light" || stored === "dark") return stored;
 
-  // Otherwise fall back to the OS/browser preference
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   return prefersDark ? "dark" : "light";
 }
@@ -15,7 +12,6 @@ function getInitialTheme() {
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(getInitialTheme);
 
-  // Keep <html class="dark"> in sync so Tailwind's dark: classes apply
   useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {
@@ -26,7 +22,6 @@ export function ThemeProvider({ children }) {
     localStorage.setItem("dk-salon-theme", theme);
   }, [theme]);
 
-  // If the user never manually chose a theme, keep following the OS setting
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e) => {
@@ -46,12 +41,4 @@ export function ThemeProvider({ children }) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
 }

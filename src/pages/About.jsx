@@ -11,7 +11,7 @@ export default function About({ scrollToSection, refs }) {
 
   return (
     <div className="bg-white dark:bg-black transition-colors duration-300">
-      {/* About Hero Section */}
+      {/* About Hero  */}
       <div className="relative w-full h-64 md:h-80 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800">
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-black/40 dark:from-black/70 dark:via-black/50 dark:to-black/70"></div>
 

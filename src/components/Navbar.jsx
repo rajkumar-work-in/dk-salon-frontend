@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { useTheme } from "../context/UseTheme"; 
 
-// ✅ Moved OUTSIDE Navbar — now it's a stable, top-level component.
+// Moved OUTSIDE Navbar — now it's a stable, top-level component.
 // theme & toggleTheme come in as props instead of being read from
 // the closure, so React won't recreate this on every Navbar render.
 function ThemeToggleButton({ theme, toggleTheme, className = "" }) {
